@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, user-scalable=no" />
+    <title>2.1 객체와 대괄호 다시보기</title>
+  </head>
+  <body>
+    <script>
+      // 2.1.1 난해해 보이는 문법들을 확인하는 목적
+      // 2.1.2 객체와 Key
+
+      // 코드 2-1 다양한 key/value 정의 방법
+
+      var obj = { a: 1, "b": 2 };
+      obj.c = 3;
+      obj['d'] = 4;
+      var e = 'e';
+      obj[e] = 5;
+      function f() { return 'f'; };
+      obj[f(n)] = 6;
+      console.log(obj); // { a: 1, b: 2, c: 3, d: 4, e: 5, f: 6 }
+    </script>
+
+    <script>
+      // 코드 2-2 띄어쓰기, 특수문자, 숫자
+      var obj2 = { ' a a a ': 1};
+      obj2['b b b'] = 2;
+      console.log(obj2); // { ' a a a ': 1, ' b b b ': 2 }
+
+      // 특수문자를 써도 key로 만들 수 있다.
+      var obj3 = { 'margin-top': 5 };
+      obj3['margin-bottom'] = 20;
+      console.log(obj3); // { margin-top: 5, margin-bottom: 20 };
+
+      // 숫자도 key로 쓸 수 있다.
+      var obj4 = { 1: 10 };
+      obj4[2] = 20;
+      console.log(obj4); // { 1: 10, 2: 20 };
+    </script>
+
+    <script>
+      // 코드 2-3 코드가 실행되지 않는 key 영역
+      var obj5 = { (true ? 'a' : 'b': 1)};
+      // Uncaught SyntaxError: Unexpected token (
+    </script>
+
+    <script>
+      // 코드 2-4 코드가 실행되는 key 영역
+      var obj6 = {};
+      obj6[true ? 'a' : 'b'] = 1;
+      console.log(obj6); // { a: 1 }
+    </script>
+
+    <script>
+      // 코드 2-5 ES6에서 동작하는 {} 안쪽에서 대괄호 사용하기
+      var obj5 = { [true ? 'a' : 'b']: 1 }; // { a: 1}
+    </script>
+
+    <script>
+      // 2.1.3 함수나 배열에 달기
+      // 코드 2-6 함수를 객체로 사용
+      function obj8() {}
+      obj8.a = 1;
+      obj8.b = 2;
+      console.log(obj8.a); // 1
+      console.log(obj8.b); // 2
+
+      // 코드 2-7 호이스팅
+      // 호이스팅을 변수 및 함수 선언이 물리적으로 작성한 코드의 상단으로 옮겨지는 것으로 가르치지만,
+      // 실제로는 그렇지 않습니다. 변수 및 함수 선언은 컴파일 단계에서 메모리에 저장되지만,
+      // 코드에서 입력한 위치와 정확히 일치한 곳에 있습니다.
+
+      obj9.a = 1;
+      obj9.b = 2;
+      console.log(obj9.a + obj9.b); // 3
+
+      function obj9() {}
+
+      // 코드 2-8 배열에 숫자가 아닌 key 사용하기
+      var obj10 = [];
+      obj10.a = 1;
+      console.log(obj10); // [a: 1]
+      console.log(obj10.length); // 0;
+
+      // 코드 2-9 배열에 숫자로 key 사용하기
+      var obj11 = [];
+      obj11[0] = 1;
+      obj11[1] = 2;
+      console.log(obj11); // [1, 2]
+      console.log(obj11.length); // 2
+    </script>
+
+    <script>
+      // 코드 2-10 한 번에 length 올리기
+      var obj12 = [];
+      obj12.length = 5;
+      console.log(obj12); // Array[5] [empty * 5]
+
+      var obj13 = [1, 2];
+      obj13[5] = 5;
+      console.log(obj13); // [1, 2, 5: 5];
+      console.log(obj13.length); // 6
+      obj13.push(6);
+      console.log(obj13); // [1, 2, 5: 5, 6: 6];
+      console.log(obj13.length); // 7
+    </script>
+
+    <script>
+      var length = 100000;
+      var list = [];
+      console.time();
+      for (var i = 0; i < length; i++) { list.push(i); }
+      console.timeEnd(); // 5 ~ 7ms
+
+      var length = 100000;
+      var list = [];
+      console.time();
+      for (var i = 0; i < length; i++) { list[list.length] = i; }
+      console.timeEnd(); // 4 ~ 5ms
+
+      var length = 100000;
+      var list = [];
+      list.length = length;
+      console.time();
+      for (var i = 0; i < length; i++) { list[i] = i; }
+      console.timeEnd(); // 2.9 ~ 3.8ms
+
+      var length = 100000;
+      var list = Array(length);
+      console.time();
+      for (var i = 0; i < length; i++) { list[i] = i; }
+      console.timeEnd(); // 2.8 ~ 3.3ms;
+    </script>
+
+    <script>
+      // 카일 심슨의 You Don't Know JS - 타입과 문법 중..
+      Array.apply(null, { length: 3}); // [undefined, undefined, undefined];
+    </script>
+
+    <script>
+      // 코드 2-11
+      console.log(obj13['len' + 'gth']); // 7
+
+      obj13['len' + 'gth'] = 10;
+      console.log(obj13.length); // 10 - like push 3 empty 요소
+
+      obj13.push(11);
+      console.log(obj13); // [1, 2, 5: 5, 6: 6, 10: 11] - length 는 11
+    </script>
+
+    <script>
+      // 2.1.4 delete
+      // 코드 2-12 기본 객체의 메소드 지우기
+      var obj = { a: 1, b: 2, c: 3 };
+      delete obj.a;
+      delete obj['b'];
+      delete obj['C'.toLowerCase()];
+      console.log(obj); // {}
+
+      delete Array.prototype.push;
+      var arr1 = [1, 2, 3];
+      arr1.push(4);
+      // Uncaught TypeError: arr1.push is not a function
+    </script>
+  </body>
+</html>
